@@ -1,0 +1,27 @@
+name: Trigger AWS Glue Job
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  trigger-glue:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Trigger AWS Glue Job
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+      run: |
+        echo "Triggering AWS Glue Job..."
+
+        aws glue start-job-run \
+          --job-name script-job \
+          --arguments='--S3_INPUT=s3://projectbucketversionone/data/input/,--S3_OUTPUT=s3://projectbucketoutputone/data/output/' \
+          --region $AWS_REGION
